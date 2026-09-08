@@ -1,0 +1,60 @@
+name: Windows
+
+on:
+  push:
+    paths-ignore:
+      - 'Example.md'
+      - 'HowToSetProject.ko.md'
+      - 'HowToSetProject.md'
+      - 'README.ko.md'
+      - 'README.md'
+      - 'TestEnv.md'
+      - 'ToTest.md'
+      - 'ToUpgrade.md'
+      - 'Vision.md'
+      - 'LICENSE'
+    branches:
+      - master
+
+  pull_request:
+    paths-ignore:
+      - 'Example.md'
+      - 'HowToSetProject.ko.md'
+      - 'HowToSetProject.md'
+      - 'README.ko.md'
+      - 'README.md'
+      - 'TestEnv.md'
+      - 'ToTest.md'
+      - 'ToUpgrade.md'
+      - 'Vision.md'
+      - 'LICENSE'
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4
+
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Run Visual Studio
+      shell: cmd
+      env:
+        _MP_VCPDB_SRV_OPTS: "-S"
+      run: |
+        call "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        cd TestExcel
+        qmake
+        nmake
+
+    - name: Cleanup Stuck Processes (Windows Only)
+      if: always()
+      shell: pwsh
+      run: |
+        Write-Host "Cleaning up lingering build processes..."
+        Get-Process -Name "cl", "link", "mspdbsrv", "nmake" -ErrorAction SilentlyContinue | Stop-Process -Force

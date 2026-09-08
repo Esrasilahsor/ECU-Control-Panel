@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Main.qml</file>
+        <file>ECUPanel.qml</file>
+        <file>DataView.qml</file>
+        <file>FirmwareUpload.qml</file>
+    </qresource>
+</RCC>
